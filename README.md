@@ -171,29 +171,18 @@ $ catkin_make -DCMAKE_BUILD_TYPE=Release
 Run usb_cam node with following ROS launch file.
 ```
 <launch>
-  <group ns="camera">
-    <node pkg="libuvc_camera" type="camera_node" name="theta_z1">
-      <!-- Parameters used to find the camera -->
-      <param name="vendor" value="0x05ca"/>
-      <param name="product" value="0x2715"/>
-      <param name="serial" value="3"/>
-      <!-- If the above parameters aren't unique, choose the first match: -->
-      <param name="index" value="2"/>
-
-      <!-- Image size and type -->
-      <param name="width" value="640"/>
-      <param name="height" value="480"/>
-      <!-- choose whichever uncompressed format the camera supports: -->
-      <param name="video_mode" value="uncompressed"/> <!-- or yuyv/nv12/mjpeg -->
-      <param name="frame_rate" value="15"/>
-
-      <param name="timestamp_method" value="start"/> <!-- start of frame -->
-      <param name="camera_info_url" value="file:///tmp/cam.yaml"/>
-
-      <param name="auto_exposure" value="3"/> <!-- use aperture_priority auto exposure -->
-      <param name="auto_white_balance" value="false"/>
-    </node>
-  </group>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="/dev/video0" />
+    <param name="image_width" value="3840" />
+    <param name="image_height" value="1920" />
+    <param name="pixel_format" value="yu12" />
+    <param name="camera_frame_id" value="camera" />
+    <param name="io_method" value="mmap"/>
+  </node>
+  <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/camera/image_raw"/>
+    <param name="autosize" value="true" />
+  </node>
 </launch>
 ```
 
