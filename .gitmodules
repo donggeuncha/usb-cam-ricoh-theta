@@ -1,0 +1,15 @@
+[submodule "v4l2loopback"]
+	path = v4l2loopback
+	url = https://github.com/umlaeute/v4l2loopback.git
+[submodule "libuvc-theta"]
+	path = libuvc-theta
+	url = https://github.com/ricohapi/libuvc-theta.git
+[submodule "libuvc-theta-sample"]
+	path = libuvc-theta-sample
+	url = https://github.com/donggeuncha/libuvc-theta-sample
+[submodule "gst-plugins-bad"]
+	path = gst-plugins-bad
+	url = https://github.com/GStreamer/gst-plugins-bad.git
+[submodule "usb_cam"]
+	path = usb_cam
+	url = https://github.com/benmaidel/usb_cam.git
