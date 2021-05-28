@@ -47,12 +47,12 @@ $ sudo apt install libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plug
 ```
 
 ### Verify nvdec installed
-If nvdec is not installed:
+If `nvdec` is not installed:
 ```
 $ gst-inspect-1.0 nvdec
 No such element or plugin 'nvdec'
 ```
-or if nvdec is installed:
+or if `nvdec` is installed:
 ```
 $ gst-inspect-1.0 | grep nvdec
 nvdec:  nvdec: NVDEC video decoder
@@ -135,7 +135,7 @@ $ sudo make install
 ```
 
 ### Build libuvc-theta-sample
-This repository contains customed libuvc-theta-sample submodule (forked from [ricohapi/libuvc-theta-sample](https://github.com/ricohapi/libuvc-theta-sample)) with modifications to add support nvdec hardware decoding plug-in for NVIDIA GPUs.
+This repository contains customed `libuvc-theta-sample` submodule (forked from [ricohapi/libuvc-theta-sample](https://github.com/ricohapi/libuvc-theta-sample)) with modifications to add support nvdec hardware decoding plug-in for NVIDIA GPUs.
 
 Before compiling you have to replace `/dev/video0` with your device interface number. (You may have to try each number to find your device.)
 ```
@@ -145,7 +145,8 @@ $ make
 ```
 
 ### Load and test v4l2loopback module
-This assumes that you have replaced the device interface number in gst_viewer.c.
+This assumes that you have replaced the device interface number in `gst_viewer.c`.
+Before test connect your device via USB, turn it on, select LIVE mode.
 ```
 $ sudo modprobe v4l2loopback
 $ cd ~/catkin_ws/src/usb-cam-ricoh-theta
@@ -157,18 +158,32 @@ $ cvlc v4l2:///dev/video0
 VLC media player 3.0.8 Vetinari (revision 3.0.8-0-gf350b6b5a7)
 [000055d39f03d240] dummy interface: using the dummy interface module...
 ```
-If you execute gst_loopback with no arguments, gst_loopback runs without nvdec.
+If you execute `gst_loopback` with no arguments, `gst_loopback` runs without `nvdec`.
 
-### Build and run usb_cam ROS node
-This repository contains customed usb_cam submodule (forked from [ros-drivers/usb_cam](https://github.com/ros-drivers/usb_cam)) with modifications to add support for YUV420 (yu12) pixel format.
+### Build usb_cam ROS package
+This repository contains customed `usb_cam` submodule (forked from [ros-drivers/usb_cam](https://github.com/ros-drivers/usb_cam)) with modifications to add support for `YUV420 (yu12)` pixel format.
 ```
+$ cd ~/catkin_ws/src/usb-cam-ricoh-theta
+$ cd usb_cam
 $ git checkout feature/YUV420
 Switched to branch 'feature/YUV420'
 Your branch is up to date with 'origin/feature/YUV420'.
+$ git branch
 $ cd ~/catkin_ws
 $ catkin_make -DCMAKE_BUILD_TYPE=Release
 ```
-Run usb_cam node with following ROS launch file.
+
+### Run v4l2loopback and usb_cam ROS node
+Connect your device via USB, turn it on, select LIVE mode.
+Run `gst_loopback` in `nvdec` mode.
+```
+$ cd ~/catkin_ws/src/usb-cam-ricoh-theta
+$ cd libuvc-theta-sample/gst
+$ ./gst_loopback nvdec
+pipe_proc = nvdec ! gldownload ! videoconvert n-thread=0 ! video/x-raw,format=I420 ! identity drop-allocation=true ! v4l2sink device=/dev/video0 qos=false sync=false
+start, hit any key to stop
+```
+Run `usb_cam` node with following ROS launch file in other terminal.
 ```
 <launch>
   <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
@@ -179,15 +194,12 @@ Run usb_cam node with following ROS launch file.
     <param name="camera_frame_id" value="camera" />
     <param name="io_method" value="mmap"/>
   </node>
-  <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
-    <remap from="image" to="/camera/image_raw"/>
-    <param name="autosize" value="true" />
-  </node>
 </launch>
 ```
+Run ROS `rviz` and add `/usb_cam/image_raw` topic to view current v4l2loopback stream.
 
 # How to load v4l2loopback automatically on boot
-Add following lines to /etc/modules-load.d/modules.conf.
+Add following lines to `/etc/modules-load.d/modules.conf`.
 ```
 # for RICOH THETA live streaming
 # v4l2loopback device on /dev/video0. specify in gst_viewer.c
