@@ -151,7 +151,7 @@ Before test connect your device via USB, turn it on, select LIVE mode.
 $ sudo modprobe v4l2loopback
 $ cd ~/catkin_ws/src/usb-cam-ricoh-theta
 $ cd libuvc-theta-sample/gst
-$ ./gst_loopback nvdec
+$ ./gst_loopback nvdec /dev/video0
 pipe_proc = nvdec ! gldownload ! videoconvert n-thread=0 ! video/x-raw,format=I420 ! identity drop-allocation=true ! v4l2sink device=/dev/video0 qos=false sync=false
 start, hit any key to stop
 $ cvlc v4l2:///dev/video0
@@ -179,7 +179,7 @@ Run `gst_loopback` in `nvdec` mode.
 ```
 $ cd ~/catkin_ws/src/usb-cam-ricoh-theta
 $ cd libuvc-theta-sample/gst
-$ ./gst_loopback nvdec
+$ ./gst_loopback nvdec /dev/video0
 pipe_proc = nvdec ! gldownload ! videoconvert n-thread=0 ! video/x-raw,format=I420 ! identity drop-allocation=true ! v4l2sink device=/dev/video0 qos=false sync=false
 start, hit any key to stop
 ```
