@@ -1,4 +1,4 @@
-usb-cam-ricoh-theta
+usb_cam_ricoh_theta_ros
 ===============
 
 # How to set up RICOH THETA for usb_cam ROS package
